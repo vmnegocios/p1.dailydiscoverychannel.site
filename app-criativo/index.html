@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Pay</title>
+	<link rel="icon" href="images/favicon.png" type="image/png">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #d3d3d3;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+        .menu {
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .menu img {
+            height: 40px;
+        }
+        .balance {
+            background-color: #F20449;
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            animation: countUp 4s forwards;
+        }
+        .content {
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #fff;
+            max-width: 600px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .content h1 {
+            color: #F20449;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .content p {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .content img {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .options {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .option {
+            background-color: #d3d3d3;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .option:hover, .option.selected {
+            background-color: #F20449;
+            color: #fff;
+        }
+        .button {
+            background-color: #F20449;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+        }
+        .spacer {
+            height: 500px; /* Espaço entre os blocos */
+        }
+        /* Estilos do pop-up */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            z-index: 10000;
+        }
+        .popup .balance-large {
+            background-color: #F20449;
+            color: #fff;
+            font-weight: bold;
+            font-size: 48px;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .popup button {
+            background-color: #F20449;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .popup button:hover {
+            background-color: #d40036;
+        }
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Menu fixo com saldo -->
+    <div class="menu">
+        <img src="images/logotiktokpay.jpg" alt="TikTok Pay Logo">
+        <div class="balance">$00.00</div>
+    </div>
+
+    <!-- Adicionando o som de dinheiro -->
+    <audio id="moneySound" src="sounds/tictim.mp3"></audio>
+
+    <!-- Bloco 1 -->
+    <div id="block1" class="content">
+        <h1>Answer and win $33.00!</h1>
+        <img src="images/Rock.jpg" alt="Question Image 1">
+        <p>From 1 to 5, what grade do you give to Dwayne Johnson "The Rock"?</p>
+        <div class="options" data-question="1">
+            <div class="option" onclick="selectOption(this, 1)">1</div>
+            <div class="option" onclick="selectOption(this, 1)">2</div>
+            <div class="option" onclick="selectOption(this, 1)">3</div>
+            <div class="option" onclick="selectOption(this, 1)">4</div>
+            <div class="option" onclick="selectOption(this, 1)">5</div>
+        </div>
+        <p>Do you think Dwayne Johnson "The Rock" content is good?</p>
+        <div class="options" data-question="2">
+            <div class="option" onclick="selectOption(this, 2)">Yes</div>
+            <div class="option" onclick="selectOption(this, 2)">No</div>
+        </div>
+        <p>Do you follow Dwayne Johnson "The Rock" on any social media?</p>
+        <div class="options" data-question="3">
+            <div class="option" onclick="selectOption(this, 3)">Yes</div>
+            <div class="option" onclick="selectOption(this, 3)">No</div>
+        </div>
+        <button class="button" onclick="playMoneySound(); scrollToNextBlock(80, '#block2', 47)">SEND RESPONSES</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Bloco 2 -->
+    <div id="block2" class="content">
+        <h1>Continue and win $33.00!</h1>
+        <img src="images/Taylor.jpg" alt="Question Image 2">
+        <p>From 1 to 5, what grade do you give to Taylor Swift?</p>
+        <div class="options" data-question="4">
+            <div class="option" onclick="selectOption(this, 4)">1</div>
+            <div class="option" onclick="selectOption(this, 4)">2</div>
+            <div class="option" onclick="selectOption(this, 4)">3</div>
+            <div class="option" onclick="selectOption(this, 4)">4</div>
+            <div class="option" onclick="selectOption(this, 4)">5</div>
+        </div>
+        <p>Do you think Taylor Swift content is good?</p>
+        <div class="options" data-question="5">
+            <div class="option" onclick="selectOption(this, 5)">Yes</div>
+            <div class="option" onclick="selectOption(this, 5)">No</div>
+        </div>
+        <p>Do you follow Taylor Swift on any social media?</p>
+        <div class="options" data-question="6">
+            <div class="option" onclick="selectOption(this, 6)">Yes</div>
+            <div class="option" onclick="selectOption(this, 6)">No</div>
+        </div>
+        <button class="button" onclick="playMoneySound(); scrollToNextBlock(113, '#block3', 80)">SEND RESPONSES</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Bloco 3 -->
+    <div id="block3" class="content">
+        <h1>Continue and win $33.00!</h1>
+        <img src="images/Tom.jpg" alt="Question Image 3">
+        <p>From 1 to 5, what grade do you give to Tom Hanks?</p>
+        <div class="options" data-question="7">
+            <div class="option" onclick="selectOption(this, 7)">1</div>
+            <div class="option" onclick="selectOption(this, 7)">2</div>
+            <div class="option" onclick="selectOption(this, 7)">3</div>
+            <div class="option" onclick="selectOption(this, 7)">4</div>
+            <div class="option" onclick="selectOption(this, 7)">5</div>
+        </div>
+        <p>Do you think Tom Hanks content is good?</p>
+        <div class="options" data-question="8">
+            <div class="option" onclick="selectOption(this, 8)">Yes</div>
+            <div class="option" onclick="selectOption(this, 8)">No</div>
+        </div>
+        <p>Do you follow Tom Hanks on any social media?</p>
+        <div class="options" data-question="9">
+            <div class="option" onclick="selectOption(this, 9)">Yes</div>
+            <div class="option" onclick="selectOption(this, 9)">No</div>
+        </div>
+        <button class="button" onclick="playMoneySound(); scrollToNextBlock(146, '#block4', 113)">SEND RESPONSES</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Bloco 4 -->
+    <div id="block4" class="content">
+        <h1>Continue and win $33.00!</h1>
+        <img src="images/chris-h.jpg" alt="Question Image 4">
+        <p>From 1 to 5, what grade do you give to Chris Hemsworth?</p>
+        <div class="options" data-question="10">
+            <div class="option" onclick="selectOption(this, 10)">1</div>
+            <div class="option" onclick="selectOption(this, 10)">2</div>
+            <div class="option" onclick="selectOption(this, 10)">3</div>
+            <div class="option" onclick="selectOption(this, 10)">4</div>
+            <div class="option" onclick="selectOption(this, 10)">5</div>
+        </div>
+        <p>Do you think Chris Hemsworth content is good?</p>
+        <div class="options" data-question="11">
+            <div class="option" onclick="selectOption(this, 11)">Yes</div>
+            <div class="option" onclick="selectOption(this, 11)">No</div>
+        </div>
+        <p>Do you follow Chris Hemsworth on any social media?</p>
+        <div class="options" data-question="12">
+            <div class="option" onclick="selectOption(this, 12)">Yes</div>
+            <div class="option" onclick="selectOption(this, 12)">No</div>
+        </div>
+        <button class="button" onclick="playMoneySound(); scrollToNextBlock(179, '#block5', 146)">SEND RESPONSES</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Bloco 5 -->
+    <div id="block5" class="content">
+        <h1>Continue and win $33.00!</h1>
+        <img src="images/emma.jpg" alt="Question Image 5">
+        <p>From 1 to 5, what grade do you give to Emma Watson?</p>
+        <div class="options" data-question="13">
+            <div class="option" onclick="selectOption(this, 13)">1</div>
+            <div class="option" onclick="selectOption(this, 13)">2</div>
+            <div class="option" onclick="selectOption(this, 13)">3</div>
+            <div class="option" onclick="selectOption(this, 13)">4</div>
+            <div class="option" onclick="selectOption(this, 13)">5</div>
+        </div>
+        <p>Do you think Emma Watson content is good?</p>
+        <div class="options" data-question="14">
+            <div class="option" onclick="selectOption(this, 14)">Yes</div>
+            <div class="option" onclick="selectOption(this, 14)">No</div>
+        </div>
+        <p>Do you follow Emma Watson on any social media?</p>
+        <div class="options" data-question="15">
+            <div class="option" onclick="selectOption(this, 15)">Yes</div>
+            <div class="option" onclick="selectOption(this, 15)">No</div>
+        </div>
+        <button class="button" onclick="playMoneySound(); scrollToNextBlock(212, '#block6', 179)">SEND RESPONSES</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Bloco 6 -->
+    <div id="block6" class="content">
+        <h1>Continue and win $33.00!</h1>
+        <img src="images/leonardo.jpg" alt="Question Image 6">
+        <p>From 1 to 5, what grade do you give to Leonardo DiCaprio?</p>
+        <div class="options" data-question="16">
+            <div class="option" onclick="selectOption(this, 16)">1</div>
+            <div class="option" onclick="selectOption(this, 16)">2</div>
+            <div class="option" onclick="selectOption(this, 16)">3</div>
+            <div class="option" onclick="selectOption(this, 16)">4</div>
+            <div class="option" onclick="selectOption(this, 16)">5</div>
+        </div>
+        <p>Do you think Leonardo DiCaprio content is good?</p>
+        <div class="options" data-question="17">
+            <div class="option" onclick="selectOption(this, 17)">Yes</div>
+            <div class="option" onclick="selectOption(this, 17)">No</div>
+        </div>
+        <p>Do you follow Leonardo DiCaprio on any social media?</p>
+        <div class="options" data-question="18">
+            <div class="option" onclick="selectOption(this, 18)">Yes</div>
+            <div class="option" onclick="selectOption(this, 18)">No</div>
+        </div>
+        <button class="button" onclick="playMoneySound(); scrollToNextBlock(245, '#block7', 212)">SEND RESPONSES</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Bloco 7 -->
+    <div id="block7" class="content">
+        <h1>Continue and win $33.00!</h1>
+        <img src="images/scarlett.jpg" alt="Question Image 7">
+        <p>From 1 to 5, what grade do you give to Scarlett Johansson?</p>
+        <div class="options" data-question="19">
+            <div class="option" onclick="selectOption(this, 19)">1</div>
+            <div class="option" onclick="selectOption(this, 19)">2</div>
+            <div class="option" onclick="selectOption(this, 19)">3</div>
+            <div class="option" onclick="selectOption(this, 19)">4</div>
+            <div class="option" onclick="selectOption(this, 19)">5</div>
+        </div>
+        <p>Do you think Scarlett Johansson content is good?</p>
+        <div class="options" data-question="20">
+            <div class="option" onclick="selectOption(this, 20)">Yes</div>
+            <div class="option" onclick="selectOption(this, 20)">No</div>
+        </div>
+        <p>Do you follow Scarlett Johansson on any social media?</p>
+        <div class="options" data-question="21">
+            <div class="option" onclick="selectOption(this, 21)">Yes</div>
+            <div class="option" onclick="selectOption(this, 21)">No</div>
+        </div>
+        <button class="button" onclick="playMoneySound(); scrollToNextBlock(278, '#block8', 245)">SEND RESPONSES</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Bloco 8 -->
+    <div id="block8" class="content">
+        <h1>Continue and win $33.00!</h1>
+        <img src="images/robert.jpg" alt="Question Image 8">
+        <p>From 1 to 5, what grade do you give to Robert Downey Jr.?</p>
+        <div class="options" data-question="22">
+            <div class="option" onclick="selectOption(this, 22)">1</div>
+            <div class="option" onclick="selectOption(this, 22)">2</div>
+            <div class="option" onclick="selectOption(this, 22)">3</div>
+            <div class="option" onclick="selectOption(this, 22)">4</div>
+            <div class="option" onclick="selectOption(this, 22)">5</div>
+        </div>
+        <p>Do you think Robert Downey Jr. content is good?</p>
+        <div class="options" data-question="23">
+            <div class="option" onclick="selectOption(this, 23)">Yes</div>
+            <div class="option" onclick="selectOption(this, 23)">No</div>
+        </div>
+        <p>Do you follow Robert Downey Jr. on any social media?</p>
+        <div class="options" data-question="24">
+            <div class="option" onclick="selectOption(this, 24)">Yes</div>
+            <div class="option" onclick="selectOption(this, 24)">No</div>
+        </div>
+        <button class="button" onclick="playMoneySound(); scrollToNextBlock(311, '#block9', 278)">SEND RESPONSES</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Bloco 9 -->
+    <div id="block9" class="content">
+        <h1>Continue and win $33.00!</h1>
+        <img src="images/chris-e.jpg" alt="Question Image 9">
+        <p>From 1 to 5, what grade do you give to Chris Evans?</p>
+        <div class="options" data-question="25">
+            <div class="option" onclick="selectOption(this, 25)">1</div>
+            <div class="option" onclick="selectOption(this, 25)">2</div>
+            <div class="option" onclick="selectOption(this, 25)">3</div>
+            <div class="option" onclick="selectOption(this, 25)">4</div>
+            <div class="option" onclick="selectOption(this, 25)">5</div>
+        </div>
+        <p>Do you think Chris Evans content is good?</p>
+        <div class="options" data-question="26">
+            <div class="option" onclick="selectOption(this, 26)">Yes</div>
+            <div class="option" onclick="selectOption(this, 26)">No</div>
+        </div>
+        <p>Do you follow Chris Evans on any social media?</p>
+        <div class="options" data-question="27">
+            <div class="option" onclick="selectOption(this, 27)">Yes</div>
+            <div class="option" onclick="selectOption(this, 27)">No</div>
+        </div>
+        <button class="button" onclick="playMoneySound(); scrollToNextBlock(344, '#block10', 311)">SEND RESPONSES</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Bloco 10 -->
+    <div id="block10" class="content">
+        <h1>Continue and win $33.00!</h1>
+        <img src="images/ryan.jpg" alt="Question Image 10">
+        <p>From 1 to 5, what grade do you give to Ryan Reynolds?</p>
+        <div class="options" data-question="28">
+            <div class="option" onclick="selectOption(this, 28)">1</div>
+            <div class="option" onclick="selectOption(this, 28)">2</div>
+            <div class="option" onclick="selectOption(this, 28)">3</div>
+            <div class="option" onclick="selectOption(this, 28)">4</div>
+            <div class="option" onclick="selectOption(this, 28)">5</div>
+        </div>
+        <p>Do you think Ryan Reynolds content is good?</p>
+        <div class="options" data-question="29">
+            <div class="option" onclick="selectOption(this, 29)">Yes</div>
+            <div class="option" onclick="selectOption(this, 29)">No</div>
+        </div>
+        <p>Do you follow Ryan Reynolds on any social media?</p>
+        <div class="options" data-question="30">
+            <div class="option" onclick="selectOption(this, 30)">Yes</div>
+            <div class="option" onclick="selectOption(this, 30)">No</div>
+        </div>
+        <button class="button" onclick="playMoneySound(); showPopup()">SEND RESPONSES</button>
+    </div>
+
+    <!-- Pop-up -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="popup" id="popup">
+        <div class="balance-large" id="popupBalance">$00.00</div>
+        <p>Congratulations, you've finished today's assessments!</p>
+        <p>Go to the transfer screen to make your withdrawal.</p>
+        <button onclick="window.location.href='https://p1.dailydiscoverychannel.site/app-carteira/'">MAKE WITHDRAWAL</button>
+    </div>
+
+    <script>
+        // Função para tocar o som
+        function playMoneySound() {
+            var sound = document.getElementById('moneySound');
+            sound.play();
+        }
+
+        let balance = 0;
+        let targetBalance = 47.00;
+        let duration = 2000; // 2 segundos
+
+        function updateBalance(target) {
+            targetBalance = target;
+            let increment = (targetBalance - balance) / (duration / 100);
+            
+            function animateBalance() {
+                if (balance < targetBalance) {
+                    balance += increment;
+                    document.querySelector('.balance').textContent = `$${balance.toFixed(2)}`;
+                    setTimeout(animateBalance, 100);
+                } else {
+                    balance = targetBalance;
+                    document.querySelector('.balance').textContent = `$${balance.toFixed(2)}`;
+                }
+            }
+            animateBalance();
+        }
+
+        function scrollToNextBlock(targetBalance, nextBlockId, currentBalance) {
+            if (balance === currentBalance) {
+                updateBalance(targetBalance);
+            }
+            document.querySelector(nextBlockId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Função para mostrar o pop-up no final
+        function showPopup() {
+            document.getElementById('popupOverlay').style.display = 'block';
+            document.getElementById('popup').style.display = 'block';
+            let popupBalance = document.getElementById('popupBalance');
+            let balancePopup = 0;
+            let finalBalancePopup = 377.00; // O valor final que deve aparecer no pop-up
+
+            function animatePopupBalance() {
+                if (balancePopup < finalBalancePopup) {
+                    balancePopup += finalBalancePopup / 100; 
+                    popupBalance.textContent = `$${balancePopup.toFixed(2)}`;
+                    setTimeout(animatePopupBalance, 50); 
+                } else {
+                    popupBalance.textContent = `$${finalBalancePopup.toFixed(2)}`;
+                }
+            }
+            animatePopupBalance();
+        }
+
+        // Inicializar o saldo
+        setTimeout(() => updateBalance(47), 500); 
+    </script>
+
+</body>
+</html>
