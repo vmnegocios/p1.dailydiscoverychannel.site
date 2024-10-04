@@ -154,7 +154,7 @@
     </div>
 
     <!-- Adicionando o som de dinheiro -->
-    <audio id="moneySound" src="sounds/tictim.MP3"></audio>
+    <audio id="moneySound" src="sounds/tictim.mp3"></audio>
 
     <!-- Bloco 1 -->
     <div id="block1" class="content">
@@ -433,64 +433,76 @@
         <button onclick="window.location.href='https://p1.dailydiscoverychannel.site/app-carteira/'">MAKE WITHDRAWAL</button>
     </div>
 
-    <script>
-        // Função para tocar o som
-        function playMoneySound() {
-            var sound = document.getElementById('moneySound');
-            sound.play();
-        }
+	<script>
+		// Função para tocar o som
+		function playMoneySound() {
+			var sound = document.getElementById('moneySound');
+			sound.play();
+		}
 
-        let balance = 0;
-        let targetBalance = 47.00;
-        let duration = 2000; // 2 segundos
+		let balance = 0;
+		let targetBalance = 47.00;
+		let duration = 2000; // 2 segundos
 
-        function updateBalance(target) {
-            targetBalance = target;
-            let increment = (targetBalance - balance) / (duration / 100);
-            
-            function animateBalance() {
-                if (balance < targetBalance) {
-                    balance += increment;
-                    document.querySelector('.balance').textContent = `$${balance.toFixed(2)}`;
-                    setTimeout(animateBalance, 100);
-                } else {
-                    balance = targetBalance;
-                    document.querySelector('.balance').textContent = `$${balance.toFixed(2)}`;
-                }
-            }
-            animateBalance();
-        }
+		function updateBalance(target) {
+			targetBalance = target;
+			let increment = (targetBalance - balance) / (duration / 100);
 
-        function scrollToNextBlock(targetBalance, nextBlockId, currentBalance) {
-            if (balance === currentBalance) {
-                updateBalance(targetBalance);
-            }
-            document.querySelector(nextBlockId).scrollIntoView({ behavior: 'smooth' });
-        }
+			function animateBalance() {
+				if (balance < targetBalance) {
+					balance += increment;
+					document.querySelector('.balance').textContent = `$${balance.toFixed(2)}`;
+					setTimeout(animateBalance, 100);
+				} else {
+					balance = targetBalance;
+					document.querySelector('.balance').textContent = `$${balance.toFixed(2)}`;
+				}
+			}
+			animateBalance();
+		}
 
-        // Função para mostrar o pop-up no final
-        function showPopup() {
-            document.getElementById('popupOverlay').style.display = 'block';
-            document.getElementById('popup').style.display = 'block';
-            let popupBalance = document.getElementById('popupBalance');
-            let balancePopup = 0;
-            let finalBalancePopup = 377.00; // O valor final que deve aparecer no pop-up
+		function scrollToNextBlock(targetBalance, nextBlockId, currentBalance) {
+			if (balance === currentBalance) {
+				updateBalance(targetBalance);
+			}
+			document.querySelector(nextBlockId).scrollIntoView({ behavior: 'smooth' });
+		}
 
-            function animatePopupBalance() {
-                if (balancePopup < finalBalancePopup) {
-                    balancePopup += finalBalancePopup / 100; 
-                    popupBalance.textContent = `$${balancePopup.toFixed(2)}`;
-                    setTimeout(animatePopupBalance, 50); 
-                } else {
-                    popupBalance.textContent = `$${finalBalancePopup.toFixed(2)}`;
-                }
-            }
-            animatePopupBalance();
-        }
+		// Função para mostrar o pop-up no final
+		function showPopup() {
+			document.getElementById('popupOverlay').style.display = 'block';
+			document.getElementById('popup').style.display = 'block';
+			let popupBalance = document.getElementById('popupBalance');
+			let balancePopup = 0;
+			let finalBalancePopup = 377.00; // O valor final que deve aparecer no pop-up
 
-        // Inicializar o saldo
-        setTimeout(() => updateBalance(47), 500); 
-    </script>
+			function animatePopupBalance() {
+				if (balancePopup < finalBalancePopup) {
+					balancePopup += finalBalancePopup / 100;
+					popupBalance.textContent = `$${balancePopup.toFixed(2)}`;
+					setTimeout(animatePopupBalance, 50);
+				} else {
+					popupBalance.textContent = `$${finalBalancePopup.toFixed(2)}`;
+				}
+			}
+			animatePopupBalance();
+		}
+
+		// Função para selecionar uma opção de cada pergunta
+		function selectOption(option, question) {
+			// Encontrar todas as opções do grupo atual de perguntas
+			let options = document.querySelectorAll('.options[data-question="' + question + '"] .option');
+			// Remover a classe 'selected' de todas as opções do grupo
+			options.forEach(function(opt) {
+				opt.classList.remove('selected');
+			});
+			// Adicionar a classe 'selected' à opção clicada
+			option.classList.add('selected');
+		}
+
+		// Inicializar o saldo
+		setTimeout(() => updateBalance(47), 500);
+	</script>
 
 </body>
 </html>
