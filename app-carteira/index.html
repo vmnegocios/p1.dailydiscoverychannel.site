@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawal Page</title>
+	<link rel="icon" href="images/favicon.png" type="image/png">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #d3d3d3;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+        .menu {
+            background-color: #fff;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 10px 30px;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .menu img {
+            height: 40px;
+        }
+        .content {
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #fff;
+            max-width: 600px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .content h1 {
+            color: #F20449;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .content p {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .balance-large {
+            background-color: #F20449;
+            color: #fff;
+            font-weight: bold;
+            font-size: 48px;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .input-box {
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .button {
+            background-color: #F20449;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .processing {
+            font-size: 16px;
+            color: #F20449;
+            margin-top: 10px;
+            display: none;
+        }
+        .error {
+            color: red;
+        }
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+        .blink {
+            animation: blink 1s infinite;
+        }
+        .popup-notification {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            z-index: 1001;
+            transition: top 0.5s ease, opacity 0.5s ease;
+        }
+        .popup-notification.show {
+            top: 20px;
+            opacity: 1;
+        }
+        .popup-notification img {
+            height: 40px;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Menu inicial -->
+    <div class="menu">
+        <img src="images/logotiktokpay.jpg" alt="TikTok Pay Logo">
+    </div>
+
+    <!-- Primeiro bloco - Saldo -->
+    <div id="balanceBlock" class="content">
+        <h1>Your Balance:</h1>
+        <div class="balance-large" id="balanceDisplay">$00.00</div>
+    </div>
+
+    <!-- Segundo bloco - Retirada -->
+    <div id="withdrawBlock" class="content">
+        <h1>Enter the amount you want to withdraw:</h1>
+        <input type="number" id="withdrawAmount" class="input-box" placeholder="Enter amount">
+        <button class="button" onclick="processWithdrawal()">CASH OUT</button>
+        <div id="processingText" class="processing">Processing...</div>
+        <div id="errorText" class="processing error"></div>
+    </div>
+
+    <!-- Pop-up de notificação -->
+    <div id="popupNotification" class="popup-notification">
+        <img src="images/logopaypal.png" alt="Bank Logo">
+        <div id="popupText">You received a transfer of $00.00</div>
+    </div>
+
+    <script>
+        let currentBalance = 0;
+        let finalBalance = 377.00;
+
+        // Função para animar o saldo ao carregar a página
+        function animateBalanceIncrease() {
+            let balanceDisplay = document.getElementById('balanceDisplay');
+            let duration = 4000; // 4 segundos
+            let increment = finalBalance / (duration / 100);
+
+            function updateBalance() {
+                if (currentBalance < finalBalance) {
+                    currentBalance += increment;
+                    balanceDisplay.textContent = `$${currentBalance.toFixed(2)}`;
+                    setTimeout(updateBalance, 100);
+                } else {
+                    currentBalance = finalBalance;
+                    balanceDisplay.textContent = `$${finalBalance.toFixed(2)}`;
+                }
+            }
+            updateBalance();
+        }
+
+        // Função para animar a diminuição do saldo após o saque
+        function animateBalanceDecrease(withdrawAmount) {
+            let balanceDisplay = document.getElementById('balanceDisplay');
+            let newBalance = currentBalance - withdrawAmount;
+            let duration = 2500; // 4 segundos
+            let decrement = (currentBalance - newBalance) / (duration / 100);
+
+            function updateBalance() {
+                if (currentBalance > newBalance) {
+                    currentBalance -= decrement;
+                    balanceDisplay.textContent = `$${currentBalance.toFixed(2)}`;
+                    setTimeout(updateBalance, 100);
+                } else {
+                    currentBalance = newBalance;
+                    balanceDisplay.textContent = `$${newBalance.toFixed(2)}`;
+                }
+            }
+            updateBalance();
+        }
+
+        // Inicializar a animação de saldo ao carregar a página
+        window.onload = function() {
+            animateBalanceIncrease();
+        };
+
+        // Função para processar o saque
+        function processWithdrawal() {
+            let withdrawAmount = parseFloat(document.getElementById('withdrawAmount').value);
+            let processingText = document.getElementById('processingText');
+            let errorText = document.getElementById('errorText');
+            errorText.style.display = 'none'; // Esconder o erro anterior, se houver
+            processingText.style.display = 'none'; // Esconder o texto de processamento anterior, se houver
+
+            if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
+                alert('Please enter a valid amount.');
+                return;
+            }
+
+            // Verificar se o valor é maior que o saldo
+            if (withdrawAmount > currentBalance) {
+                errorText.textContent = "Insufficient amount, check your balance above and enter the amount you want to withdraw again.";
+                errorText.style.display = 'block';
+                return;
+            }
+
+            // Mostrar o texto "Processing..." piscando
+            processingText.style.display = 'block';
+            processingText.classList.add('blink'); // Adiciona o efeito de piscar
+
+            // Simular o processamento e exibir o pop-up após 5 segundos
+            setTimeout(function() {
+                processingText.style.display = 'none'; // Esconder o texto de processamento
+                showPopupNotification(withdrawAmount);
+                animateBalanceDecrease(withdrawAmount); // Animação para a diminuição do saldo
+            }, 5000);
+        }
+
+        // Função para exibir o pop-up de notificação
+        function showPopupNotification(amount) {
+            let popupNotification = document.getElementById('popupNotification');
+            let popupText = document.getElementById('popupText');
+            popupText.textContent = `You received a transfer of $${amount.toFixed(2)}`;
+            popupNotification.classList.add('show');
+
+            // Remover o pop-up após 10 segundos
+            setTimeout(function() {
+                popupNotification.classList.remove('show');
+            }, 10000);
+        }
+    </script>
+
+</body>
+</html>
