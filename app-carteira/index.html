@@ -100,11 +100,11 @@
             top: -100px;
             left: 50%;
             transform: translateX(-50%);
-            width: 400px;
+            width: 90%; /* Para garantir que não encoste nos lados */
+            max-width: 400px; /* Limitar o tamanho máximo */
             padding: 20px;
             background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 10px;
+            border-radius: 20px; /* Bordas arredondadas */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
@@ -177,7 +177,7 @@
         function animateBalanceDecrease(withdrawAmount) {
             let balanceDisplay = document.getElementById('balanceDisplay');
             let newBalance = currentBalance - withdrawAmount;
-            let duration = 2500; // 4 segundos
+            let duration = 2500; // 2.5 segundos
             let decrement = (currentBalance - newBalance) / (duration / 100);
 
             function updateBalance() {
